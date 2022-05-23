@@ -1,134 +1,71 @@
 const PLAYLISTS_URL = 'https://api.spotify.com/v1/users/xojtgo4dup8xwal4vczxic7iz/playlists';
 const RECOMMENDED_URL = 'https://api.spotify.com/v1/browse/featured-playlists';
 const PROFILE_URL = 'https://api.spotify.com/v1/users/xojtgo4dup8xwal4vczxic7iz';
-const clientId = 'e3647861a3ff42d3a5534a5023f209d4';
-const clientSecret = '473f19bdad214944a38a5b7191cc2e41';
+const pics = document.getElementsByClassName('playlist__pic');
+const titles = document.getElementsByClassName('description__title');
+const descs = document.getElementsByClassName('description__text');
+let count = 0;
+
+/**
+ * Заменяет элементы на сайте, согласно полученному ответу.
+ * 
+ * @param {object} item Полученные с запроса данные.
+ */
+const set_items = (item) => {
+    pics[count].src = item.images[0].url;
+    titles[count].textContent = item.name;
+    descs[count].textContent = item.description;
+    count += 1;
+}
+
 /**
  * Возвращает список плейлистов конкретного пользователя (меня).
  * 
- * @param {string} TOKEN Токен, необходимый для запросов.
  * @param {string} URL Ссылка на запрос.
  */
-const get_playlists = async (TOKEN, URL) => {
-    let result;
-    try {
-        const response = await fetch(URL, {
-            headers: {
-                Authorization: `Bearer ${TOKEN}`,
-                'Content-Type': 'application/json',
-            }
-        }); 
-        result = await response.json();
-    } catch (err) {
-        console.log('Ошибка: ', err)
-    }
-    let count = 0;
-    let pics = document.getElementsByClassName('playlist__pic');
-    let titles = document.getElementsByClassName('description__title');
-    let desc = document.getElementsByClassName('description__text');
+ const get_playlists = async (URL) => {
+    await doFetch(URL);
+    const result = JSON.parse(localStorage.getItem('info'));
     (result.items).map((item) => {
-        pics[count].src = item.images[1].url
-        titles[count].innerHTML = item.name;
-        desc[count].innerHTML = item.description;
-        count += 1;
+        set_items(item);
     })
 }
 
 /**
  * Возвращает информацию о пользователе (ник и фотографию профиля).
  * 
- * @param {string} TOKEN Токен, необходимый для запросов.
  * @param {string} URL Ссылка на запрос.
  */
-
-const get_user_info = async (TOKEN, URL) => {
-    let result;
-    try {
-        const response = await fetch(URL, {
-            headers: {
-                Authorization: `Bearer ${TOKEN}`,
-                'Content-Type': 'application/json',
-            }
-        }); 
-        result = await response.json();
-    } catch (err) {
-        console.log('Ошибка: ', err)
-    }
+const get_user_info = async (URL) => {
+    await doFetch(URL)
+    const result = JSON.parse(localStorage.getItem('info'));
     let account_pic = document.getElementsByClassName('account__pic')[0];
     let account_name = document.getElementsByClassName('account__name')[0];
-    account_pic.src = result.images[0].url
-    account_name.innerHTML = result.display_name;
+    account_pic.src = result.images[0].url;
+    account_name.textContent = result.display_name;
 }
 
 /**
  * Возвращает список плейлистов, созданных Spotify.
  * 
- * @param {string} TOKEN Токен, необходимый для запросов.
  * @param {string} URL Ссылка на запрос.
  */
-
-const get_recommended_playlists = async (TOKEN, URL) => {
-    let result;
-    try {
-        const response = await fetch(URL, {
-            headers: {
-                Authorization: `Bearer ${TOKEN}`,
-                'Content-Type': 'application/json',
-            }
-        }); 
-        result = await response.json();
-    } catch (err) {
-        console.log('Ошибка: ', err)
-    }
-    let count = 8;
-    let pics = document.getElementsByClassName('playlist__pic');
-    let titles = document.getElementsByClassName('description__title');
-    let desc = document.getElementsByClassName('description__text');
+const get_recommended_playlists = async (URL) => {
+    await doFetch(URL);
+    const result = JSON.parse(localStorage.getItem('info'));
     (result.playlists.items).map((item) => {
-        pics[count].src = item.images[0].url
-        titles[count].innerHTML = item.name;
-        desc[count].innerHTML = item.description;
-        count += 1;
+        set_items(item);
     })
 }
 
-/**
- * Создание токена и инициирование запросов.
- * 
- * @param {string} id ID клиента 
- * @param {string} secret Секрет клиента
- */
-const init = (id, secret) => {
-     fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type' : 'application/x-www-form-urlencoded', 
-        }, 
-        body: 'grant_type=client_credentials&client_id=' + id + '&client_secret=' + secret,
-    })
-    .then((response) => {
-        if (!response.ok) {
-            return Promise.reject(new Error('Spotify Token Request Error'));
-        } else {
-            return response.json();
-        }
-    })
-    .catch((err) => {
-        console.log('First Fetch ' + err);
-    })
-    .then((json) => {
-        try {
-          console.log("Current token: " + json.access_token);
-          get_playlists(json.access_token, PLAYLISTS_URL);
-          get_user_info(json.access_token, PROFILE_URL);
-          get_recommended_playlists(json.access_token, RECOMMENDED_URL)
-        }
-        catch
-        {
-          return Promise.reject(new Error(`State Error!: Data: , Connection:`));
-        }
-      })
-}
 
+get_playlists(PLAYLISTS_URL);
+get_user_info(PROFILE_URL);
+get_recommended_playlists(RECOMMENDED_URL);
 
-init(clientId, clientSecret);
+if(JSON.parse(localStorage.getItem('info')).error) {    //если в локальном хранилище появилась ошибка, то токен обновляется
+    getToken();
+    setTimeout(()=> {
+        document.location.reload()
+    }, 1000);
+} 
