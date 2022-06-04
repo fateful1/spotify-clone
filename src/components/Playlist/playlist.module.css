@@ -1,0 +1,39 @@
+.playlists__playlist {
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4%;
+    width: 183px;
+    height: 250px;
+}
+
+.playlists__playlist:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    background-color: rgba(155, 68, 255, 0.1);
+}
+
+.playlist__pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 4%;
+    margin-bottom: 8px;
+}
+
+.playlist__description {
+    color: #fff;
+}
+
+.description__title {
+    height: 28px;
+    width: 150px;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.description__text {
+    height: 32px;
+    width: 150px;
+    font-size: 12px;
+    overflow: hidden;
+}

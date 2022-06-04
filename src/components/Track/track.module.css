@@ -1,0 +1,49 @@
+.track {
+    height: 60px;
+    width: 1200px;
+    padding-bottom: 15px;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: 25px 25px 385px 385px 185px auto;
+}
+
+.track:hover {
+    cursor: pointer;
+}
+
+.track__number {
+    color: rgb(255, 255, 255, .7);
+    width: 30px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.track__image {
+    width: 40px;
+    height: 40px;
+}
+
+.track__names {
+    display: flex;
+    flex-direction: column;
+    padding-left: 16px;
+}
+
+.track__name {
+    color: rgb(255, 255, 255, .9);
+    font-weight: 600;
+}
+
+.track__artist {
+    color: rgb(255, 255, 255, .7);
+}
+
+.track__album,
+.track__duration,
+.track__date {
+    color: rgb(255, 255, 255, .7);
+    display: flex;
+    align-items: center;
+}
