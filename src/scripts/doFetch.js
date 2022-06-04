@@ -3,17 +3,15 @@
  * 
  * @param {string} URL Ссылка на запрос
  */
-async function doFetch(URL) { 
-    let result;
+export async function doFetch(URL, TOKEN) { 
     try {
         const response = await fetch(URL, {
             headers: {
-                Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
+                Authorization: `Bearer ${TOKEN}`,
                 'Content-Type': 'application/json',
             }
         })
-        result = await response.json();
-        localStorage.setItem('info', JSON.stringify(result));
+        return await response.json();
     } catch (err) {
         console.log('Ошибка: ', err);
         return err;
